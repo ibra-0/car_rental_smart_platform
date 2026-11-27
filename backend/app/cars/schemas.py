@@ -1,9 +1,9 @@
 from typing import Annotated, Literal, Self
 
-from pydantic import Field, HttpUrl, StringConstraints, model_validator
+from pydantic import AwareDatetime, Field, HttpUrl, StringConstraints, model_validator
 
 from app.cars.models import CarClass, Transmission
-from app.common import InputModel, OutputModel, Pagination
+from app.common import InputModel, OutputModel, Pagination, validate_rental_period
 
 CarName = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=60)]
 Money = Annotated[int, Field(gt=0, le=100_000_000, strict=True)]
@@ -63,6 +63,8 @@ class CarResponse(OutputModel):
 
 
 class CarFilters(Pagination):
+    starts_at: AwareDatetime | None = None
+    ends_at: AwareDatetime | None = None
     q: str = Field(default="", max_length=100)
     brand: str | None = Field(default=None, max_length=60)
     car_class: CarClass | None = None
@@ -72,6 +74,10 @@ class CarFilters(Pagination):
 
     @model_validator(mode="after")
     def ordered_prices(self) -> Self:
+        if (self.starts_at is None) != (self.ends_at is None):
+            raise ValueError("Provide both starts_at and ends_at")
+        if self.starts_at is not None and self.ends_at is not None:
+            validate_rental_period(self.starts_at, self.ends_at)
         if self.min_price is not None and self.max_price is not None:
             if self.min_price > self.max_price:
                 raise ValueError("min_price must not exceed max_price")

@@ -2,26 +2,7 @@ import pytest
 from sqlalchemy.orm import Session
 
 from app.cars.seed import seed_cars
-
-CAR = {
-    "brand": "Toyota",
-    "model": "Camry",
-    "year": 2024,
-    "car_class": "comfort",
-    "transmission": "automatic",
-    "seats": 5,
-    "description": "Comfortable sedan",
-    "image_url": "https://example.com/car.jpg",
-    "hourly_price": 2000,
-    "daily_price": 20000,
-}
-
-
-@pytest.fixture
-def car(client, admin_headers):
-    response = client.post("/api/v1/admin/cars", headers=admin_headers, json=CAR)
-    assert response.status_code == 201, response.text
-    return response.json()
+from tests.data import CAR
 
 
 def test_admin_permissions(client, user_headers):

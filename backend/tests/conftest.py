@@ -1,4 +1,5 @@
 import os
+from datetime import UTC, datetime, timedelta
 
 import pytest
 from alembic import command
@@ -16,6 +17,7 @@ os.environ["JWT_SECRET"] = "test-only-secret-key-with-at-least-32-characters"
 
 from app.db import get_db  # noqa: E402
 from app.main import app  # noqa: E402
+from tests.data import CAR  # noqa: E402
 
 
 @pytest.fixture(scope="session")
@@ -73,3 +75,27 @@ def admin_headers(client, engine):
         db.commit()
         token = create_token(admin.id)
     return {"Authorization": f"Bearer {token}"}
+
+
+@pytest.fixture
+def car(client, admin_headers):
+    response = client.post("/api/v1/admin/cars", headers=admin_headers, json=CAR)
+    assert response.status_code == 201, response.text
+    return response.json()
+
+
+@pytest.fixture
+def rental(car):
+    start = datetime.now(UTC) + timedelta(days=3)
+    return {
+        "car_id": car["id"],
+        "starts_at": start.isoformat(),
+        "ends_at": (start + timedelta(hours=26)).isoformat(),
+    }
+
+
+@pytest.fixture
+def booking(client, user_headers, rental):
+    response = client.post("/api/v1/bookings", headers=user_headers, json=rental)
+    assert response.status_code == 201, response.text
+    return response.json()

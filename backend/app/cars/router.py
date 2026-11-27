@@ -5,6 +5,7 @@ from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session
 
 from app.auth.dependencies import AdminUser
+from app.bookings.availability import available_cars
 from app.cars.models import Car
 from app.cars.schemas import CarCreate, CarFilters, CarResponse, CarUpdate
 from app.common import Page, Pagination
@@ -17,6 +18,8 @@ admin_router = APIRouter(prefix="/admin/cars", tags=["admin cars"])
 @router.get("", response_model=Page[CarResponse])
 def list_cars(filters: Annotated[CarFilters, Query()], db: Session = Depends(get_db)):
     statement = select(Car).where(Car.is_active.is_(True))
+    if filters.starts_at is not None:
+        statement = available_cars(filters.starts_at, filters.ends_at)
     if filters.q:
         statement = statement.where(
             or_(
