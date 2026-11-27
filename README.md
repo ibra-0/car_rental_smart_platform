@@ -26,6 +26,12 @@ Registration always creates a regular user. Login accepts a JSON object with `em
 `password` and returns a bearer token valid for 60 minutes. Pass it as
 `Authorization: Bearer <access_token>`. Roles are checked against the database on each request.
 
+## Demo catalog
+
+Run `uv run python -m app.cli seed` from `backend/` to insert 12 demo cars.
+The command requires an empty catalog and never changes existing cars.
+Demo images are illustrative placeholders; replace their URLs through the administrator API.
+
 ## Tests
 
 Run `docker compose --profile test up -d --wait test-db` from the repository root.

@@ -1,6 +1,7 @@
 from alembic import context
 
 from app.auth import models as auth_models  # noqa: F401
+from app.cars import models as car_models  # noqa: F401
 from app.db import Base, get_engine
 
 target_metadata = Base.metadata

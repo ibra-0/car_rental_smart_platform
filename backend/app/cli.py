@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from app.auth.models import Role, User
 from app.auth.schemas import RegisterRequest
 from app.auth.security import password_hash
+from app.cars.seed import seed_cars
 from app.db import get_engine
 
 
@@ -33,9 +34,14 @@ def main() -> None:
     admin = commands.add_parser("create-admin")
     admin.add_argument("--email", required=True)
     admin.add_argument("--name", required=True)
+    commands.add_parser("seed")
     args = parser.parse_args()
     if args.command == "create-admin":
         create_admin(args.email, args.name)
+    elif args.command == "seed":
+        with Session(get_engine()) as db:
+            count = seed_cars(db)
+        print(f"Added {count} demo cars")
 
 
 if __name__ == "__main__":

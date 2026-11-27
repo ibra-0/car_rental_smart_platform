@@ -5,11 +5,15 @@ from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import Session
 
 from app.auth.router import router as auth_router
+from app.cars.router import admin_router as admin_cars_router
+from app.cars.router import router as cars_router
 from app.config import get_settings
 from app.db import get_db
 
 app = FastAPI(title="DriveRent API", version="0.1.0")
 app.include_router(auth_router, prefix="/api/v1")
+app.include_router(cars_router, prefix="/api/v1")
+app.include_router(admin_cars_router, prefix="/api/v1")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=get_settings().cors_origins,
