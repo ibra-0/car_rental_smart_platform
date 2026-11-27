@@ -11,6 +11,21 @@ FastAPI + PostgreSQL backend for the DriveRent university project.
 
 API documentation: http://localhost:8000/docs. Database health: http://localhost:8000/health.
 
+## Administrator
+
+From `backend/`, provide a password through the environment (8–128 characters):
+
+```sh
+read -s ADMIN_PASSWORD
+export ADMIN_PASSWORD
+uv run python -m app.cli create-admin --email admin@example.com --name Administrator
+unset ADMIN_PASSWORD
+```
+
+Registration always creates a regular user. Login accepts a JSON object with `email` and
+`password` and returns a bearer token valid for 60 minutes. Pass it as
+`Authorization: Bearer <access_token>`. Roles are checked against the database on each request.
+
 ## Tests
 
 Run `docker compose --profile test up -d --wait test-db` from the repository root.
