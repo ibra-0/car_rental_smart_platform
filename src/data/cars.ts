@@ -1,0 +1,40 @@
+import type { Car, Category } from "../types";
+const rows: [string, string, Category, number, number, string, boolean][] = [
+  ["Toyota", "Camry", "Comfort", 25000, 5, "camry", true],
+  ["BMW", "5 Series", "Premium", 55000, 5, "bmw", true],
+  ["Hyundai", "Tucson", "SUV", 32000, 5, "suv", true],
+  ["Toyota", "Corolla", "Economy", 18000, 5, "camry", true],
+  ["Toyota", "Land Cruiser", "SUV", 65000, 7, "suv", true],
+  ["Hyundai", "Elantra", "Comfort", 22000, 5, "camry", true],
+  ["Kia", "K5", "Comfort", 27000, 5, "camry", true],
+  ["Kia", "Sportage", "SUV", 30000, 5, "suv", false],
+  ["Mercedes-Benz", "E-Class", "Premium", 60000, 5, "mercedes", true],
+  ["Lexus", "ES", "Premium", 48000, 5, "mercedes", true],
+  ["Volkswagen", "Polo", "Economy", 16000, 5, "camry", true],
+  ["Chevrolet", "Cobalt", "Economy", 14000, 5, "camry", true],
+];
+export const initialCars: Car[] = rows.map(
+  ([brand, model, category, dailyPrice, passengers, image, available], i) => ({
+    id: String(i + 1),
+    brand,
+    model,
+    category,
+    dailyPrice,
+    passengers,
+    year: 2023 + (i % 3),
+    description: `Make more of every journey in the ${brand} ${model}. A considered balance of comfort, capability, and everyday practicality, ready for your next chapter in Almaty.`,
+    transmission: i === 11 ? "Manual" : "Automatic",
+    fuel: i === 9 ? "Hybrid" : i === 4 ? "Diesel" : "Petrol",
+    monthlyDiscount: 0.2,
+    images: [`/images/${image}.jpg`, "/images/interior.jpg"],
+    available,
+    features: [
+      "Air conditioning",
+      "Bluetooth audio",
+      "Rear parking camera",
+      "USB charging",
+      "Cruise control",
+      "Comprehensive demo cover",
+    ],
+  }),
+);
