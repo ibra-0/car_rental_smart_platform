@@ -1,10 +1,12 @@
+from datetime import UTC, datetime
+
 from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.bookings.availability import available_cars
-from app.bookings.models import Booking
+from app.bookings.models import BLOCKING_STATUSES, Booking, BookingStatus
 from app.bookings.pricing import calculate_price
 from app.bookings.schemas import BookingRequest
 from app.cars.models import Car
@@ -40,5 +42,30 @@ def create_booking(db: Session, data: BookingRequest, user_id: int) -> Booking:
         raise HTTPException(
             status_code=409, detail="Car unavailable for the selected period"
         ) from exc
+    db.refresh(booking)
+    return booking
+
+
+ADMIN_TRANSITIONS = {
+    BookingStatus.PENDING: {BookingStatus.CONFIRMED, BookingStatus.REJECTED},
+    BookingStatus.CONFIRMED: {BookingStatus.CANCELLED, BookingStatus.COMPLETED},
+}
+
+
+def update_status(
+    db: Session, booking: Booking, status: BookingStatus, *, by_customer: bool = False
+) -> Booking:
+    now = datetime.now(UTC)
+    if by_customer:
+        if booking.status not in BLOCKING_STATUSES or booking.starts_at <= now:
+            raise HTTPException(status_code=409, detail="This booking can no longer be cancelled")
+        status = BookingStatus.CANCELLED
+    else:
+        if status not in ADMIN_TRANSITIONS.get(booking.status, set()):
+            raise HTTPException(status_code=409, detail="Invalid booking status transition")
+        if status == BookingStatus.COMPLETED and booking.ends_at > now:
+            raise HTTPException(status_code=409, detail="Rental has not ended yet")
+    booking.status = status
+    db.commit()
     db.refresh(booking)
     return booking

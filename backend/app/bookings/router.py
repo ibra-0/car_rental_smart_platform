@@ -5,10 +5,10 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.auth.dependencies import CurrentUser
-from app.bookings.models import Booking
+from app.bookings.models import Booking, BookingStatus
 from app.bookings.pricing import calculate_price
 from app.bookings.schemas import BookingRequest, BookingResponse, QuoteResponse
-from app.bookings.service import create_booking, rental_car
+from app.bookings.service import create_booking, rental_car, update_status
 from app.common import Page, Pagination
 from app.db import get_db
 
@@ -49,3 +49,15 @@ def get_booking(booking_id: int, user: CurrentUser, db: Session = Depends(get_db
     if booking is None:
         raise HTTPException(status_code=404, detail="Booking not found")
     return booking
+
+
+@router.post("/{booking_id}/cancel", response_model=BookingResponse)
+def cancel_booking(booking_id: int, user: CurrentUser, db: Session = Depends(get_db)) -> Booking:
+    booking = db.scalar(
+        select(Booking)
+        .where(Booking.id == booking_id, Booking.user_id == user.id)
+        .with_for_update(of=Booking)
+    )
+    if booking is None:
+        raise HTTPException(status_code=404, detail="Booking not found")
+    return update_status(db, booking, BookingStatus.CANCELLED, by_customer=True)
