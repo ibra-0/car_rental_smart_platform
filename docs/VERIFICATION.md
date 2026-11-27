@@ -77,7 +77,7 @@ Early browser test failures came from label-selector assumptions and attempting 
 
 ## Git and local usage
 
-No commit was created because neither Git author name nor email is configured. No identity was invented. No push, deployment or publication was performed. Source files remain available for review. README includes the exact author-configuration, commit and optional push commands.
+At the initial frontend handoff, no commit had been created because Git author details were unset, and no push or deployment had been performed. A later user-requested synchronization configured the repository-local author from the connected GitHub profile and combined the frontend with Student 2’s backend history. See Git history for the current synchronization state. No application deployment is part of this synchronization.
 
 ```sh
 cd /Users/macbook/Documents/Codex/2026-11-27/car_rental_smart_platform

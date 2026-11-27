@@ -4,7 +4,7 @@
 
 This is Student 1’s university frontend for DriveRent. Student: Razyyev Ibrakhim, 24B030181. Use React, strict TypeScript, Vite and the existing component tokens. The target audience is car renters in Almaty; UI is English and prices are KZT.
 
-Student 2 owns backend, database, real authentication, business logic, booking API and actual recommendation algorithm. Do not add a backend, payment provider, API keys, database or fake real authentication without an explicit new request.
+Student 2 owns backend, database, real authentication, business logic, booking API and actual recommendation algorithm. The existing `backend/` and its CI/deployment files are Student 2’s work, received through Git synchronization; preserve them. Do not implement or modify backend behavior, add a payment provider, expose API keys or create fake real authentication without an explicit new request.
 
 ## Architecture
 

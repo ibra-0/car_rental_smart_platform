@@ -1,6 +1,8 @@
 # Proposed DriveRent API contract
 
-**Proposal for discussion with Student 2. These endpoints are not implemented or live.** Student 1 owns the frontend; Student 2 owns persistence, authentication, pricing authority, inventory locks and recommendation implementation.
+**Historical frontend proposal for discussion with Student 2. These proposed contracts are not implemented by the frontend.**
+
+The repository now includes Student 2’s backend. See [the actual backend handoff](frontend.md) and its generated OpenAPI for implemented endpoints. This proposal is retained for comparison and must not be treated as the backend specification. The UI remains in mock mode. Student 1 owns the frontend; Student 2 owns persistence, authentication, pricing authority, inventory locks and recommendation implementation.
 
 ## Shared conventions
 

@@ -8,3 +8,11 @@ dist/
 playwright-report/
 test-results/
 .DS_Store
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.egg-info/
