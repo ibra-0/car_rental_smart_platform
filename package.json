@@ -11,7 +11,8 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "format": "prettier --write src e2e docs *.md *.ts *.js *.json index.html"
+    "format": "prettier --write src e2e docs *.md *.ts *.js *.json index.html",
+    "check:api": "node scripts/check-api.mjs"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "1.3.1",

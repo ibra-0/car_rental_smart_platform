@@ -7,29 +7,27 @@ import { filterCars } from "../services/carService";
 import { CarGrid, EmptyState, PageHeading } from "../components/Common";
 import { Button } from "../components/ui/Button";
 import { money, validateDates } from "../utils/rental";
+import {
+  parseCatalogFilters,
+  updateCatalogParam,
+  clearRentalDates,
+} from "../utils/catalogFilters";
 export default function Catalog() {
   const { cars } = useApp();
   const [params, setParams] = useSearchParams();
   const [mobile, setMobile] = useState(false);
-  const defaults: Filters = {
-    query: "",
-    brand: "",
-    category: params.get("category") || "",
-    maxPrice: 100000,
-    transmission: "",
-    fuel: "",
-    availability: "",
-    sort: "relevance",
-    start: params.get("start") || undefined,
-    end: params.get("end") || undefined,
-  };
-  const [filters, setFilters] = useState(defaults);
+  const filters = parseCatalogFilters(params);
   function update<K extends keyof Filters>(key: K, value: Filters[K]) {
-    setFilters({ ...filters, [key]: value });
+    setParams((current) => updateCatalogParam(current, key, value), {
+      replace: true,
+    });
   }
   const result = filterCars(cars, filters);
-  const periodQuery = new URLSearchParams(params);
-  periodQuery.delete("category");
+  const periodQuery = new URLSearchParams();
+  for (const key of ["start", "end", "location", "term"]) {
+    const value = params.get(key);
+    if (value) periodQuery.set(key, value);
+  }
   const query = periodQuery.size ? "?" + periodQuery : "";
   const dateError =
     filters.start && filters.end
@@ -55,6 +53,8 @@ export default function Catalog() {
         <Button
           variant="outline"
           className="filter-toggle"
+          aria-controls="catalog-filters"
+          aria-expanded={mobile}
           onClick={() => setMobile(!mobile)}
         >
           <SlidersHorizontal size={17} /> Filters
@@ -80,8 +80,9 @@ export default function Catalog() {
           <button
             className="text-link"
             onClick={() => {
-              setParams({});
-              setFilters({ ...filters, start: undefined, end: undefined });
+              setParams((current) => clearRentalDates(current), {
+                replace: true,
+              });
             }}
           >
             Clear dates
@@ -94,7 +95,10 @@ export default function Catalog() {
         </p>
       )}
       <div className="catalog-layout">
-        <aside className={mobile ? "filter-panel show" : "filter-panel"}>
+        <aside
+          id="catalog-filters"
+          className={mobile ? "filter-panel show" : "filter-panel"}
+        >
           <div className="row between">
             <h3>Refine your drive</h3>
             <button
@@ -178,12 +182,6 @@ export default function Catalog() {
           <Button
             variant="outline"
             onClick={() => {
-              setFilters({
-                ...defaults,
-                category: "",
-                start: undefined,
-                end: undefined,
-              });
               setParams({});
             }}
           >

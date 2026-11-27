@@ -27,6 +27,35 @@ npm run test:e2e
 
 Playwright tests use an installed Google Chrome. See [frontend documentation](docs/FRONTEND_GUIDE.md) for architecture, routes, pricing assumptions, privacy boundaries and browser setup, and the [initial verification report](docs/VERIFICATION.md) for executed checks.
 
+## Local review setup
+
+The local review uses frontend `http://localhost:5173`, backend `http://localhost:8010/docs`, and PostgreSQL on `127.0.0.1:5440` because the default backend/database ports are occupied by another project. Port overrides belong in the ignored root `.env`:
+
+```dotenv
+API_PORT=8010
+POSTGRES_PORT=5440
+TEST_POSTGRES_PORT=5434
+```
+
+When running Python outside Docker, update the host port in `DATABASE_URL` and `TEST_DATABASE_URL` to match. Docker Compose uses service names internally and keeps port 5432 inside the database containers. The API is bound to loopback for local development.
+
+On the configured local checkout, start both parts with:
+
+```sh
+docker compose up -d --wait db api
+npm run dev
+```
+
+On a first setup, follow the backend guide to build the image, apply migrations and seed the empty catalog before starting the API. The seed command intentionally refuses a nonempty catalog; do not rerun it on every startup.
+
+Run the live HTTP check against the local API:
+
+```sh
+npm run check:api -- http://127.0.0.1:8010
+```
+
+This check creates a fictional local account, creates and cancels a reservation, and verifies authentication, permissions, availability, recommendations and CORS. Credentials remain in process memory. It refuses remote hosts to avoid test writes to a deployed service. It tests the API directly; it does not imply frontend/backend integration. See [the local review](docs/LOCAL_REVIEW.md) for findings.
+
 ## Backend
 
 Student 2’s FastAPI/PostgreSQL implementation, database migrations, tests, Docker Compose, CI and deployment configuration are preserved in this repository.

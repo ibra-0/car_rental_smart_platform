@@ -3077,3 +3077,27 @@ td select {
 .sort-label {
   flex-direction: row;
 }
+
+/* Keep trip controls and operational statuses readable at every breakpoint. */
+.filter-panel label,
+.filter-panel select,
+.sort-label,
+.search-input input,
+.search-fields label,
+.search-fields input,
+.search-fields select,
+.rental-tabs button,
+.car-specs,
+.status,
+.vehicle-form label,
+.finder-layout label {
+  font-size: 0.875rem;
+}
+.table-card th,
+.table-card td,
+.table-card td select {
+  font-size: 0.875rem;
+}
+.table-card button.status {
+  min-height: 44px;
+}

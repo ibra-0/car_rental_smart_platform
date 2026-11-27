@@ -199,3 +199,44 @@ test("mobile navigation, filters and monthly pricing", async ({ page }) => {
     "Return must be after pickup",
   );
 });
+
+test("catalog filters survive reload and same-page navigation", async ({
+  page,
+}) => {
+  await page.goto(
+    "/cars?category=SUV&start=2099-01-01T10:00&end=2099-01-03T10:00",
+  );
+  await page
+    .getByRole("combobox", { name: "Brand", exact: true })
+    .selectOption("Toyota");
+  await page
+    .getByRole("combobox", { name: "Sort vehicles" })
+    .selectOption("price-desc");
+  await page.reload();
+  await expect(
+    page.getByRole("combobox", { name: "Brand", exact: true }),
+  ).toHaveValue("Toyota");
+  await expect(
+    page.getByRole("combobox", { name: "Vehicle class", exact: true }),
+  ).toHaveValue("SUV");
+  await expect(
+    page.getByRole("combobox", { name: "Sort vehicles" }),
+  ).toHaveValue("price-desc");
+  await expect(page.locator(".car-card")).toHaveCount(1);
+  await page.getByRole("button", { name: "Clear dates" }).click();
+  await expect(
+    page.getByRole("combobox", { name: "Brand", exact: true }),
+  ).toHaveValue("Toyota");
+  await expect(page).not.toHaveURL(/start=/);
+  await page
+    .getByRole("link", { name: "Long-term rental", exact: true })
+    .click();
+  await expect(
+    page.getByRole("combobox", { name: "Brand", exact: true }),
+  ).toHaveValue("");
+  await expect(
+    page.getByRole("combobox", { name: "Vehicle class", exact: true }),
+  ).toHaveValue("");
+  await expect(page).toHaveURL(/term=long/);
+  await expect(page.locator(".car-card")).toHaveCount(12);
+});

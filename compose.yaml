@@ -6,7 +6,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
       POSTGRES_DB: driverent
     ports:
-      - "127.0.0.1:5433:5432"
+      - "127.0.0.1:${POSTGRES_PORT:-5433}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -23,7 +23,7 @@ services:
       POSTGRES_PASSWORD: test-password
       POSTGRES_DB: driverent_test
     ports:
-      - "127.0.0.1:5434:5432"
+      - "127.0.0.1:${TEST_POSTGRES_PORT:-5434}:5432"
     tmpfs:
       - /var/lib/postgresql/data
     healthcheck:
@@ -39,7 +39,7 @@ services:
       JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env}
       CORS_ORIGINS: ${CORS_ORIGINS:-["http://localhost:5173"]}
     ports:
-      - "8000:8000"
+      - "127.0.0.1:${API_PORT:-8000}:8000"
     depends_on:
       db:
         condition: service_healthy

@@ -7,6 +7,7 @@ export default ts.config(
   { ignores: ["dist", "node_modules", "test-results", "playwright-report"] },
   js.configs.recommended,
   ...ts.configs.recommended,
+  { files: ["scripts/**/*.mjs"], languageOptions: { globals: globals.node } },
   {
     files: ["**/*.{ts,tsx}"],
     languageOptions: { globals: globals.browser },
